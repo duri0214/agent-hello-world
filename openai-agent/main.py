@@ -11,19 +11,35 @@ load_dotenv()
 
 
 def calculate(expression: str) -> str:
-    """与えられた数式を計算する。"""
+    """与えられた数式を計算するツール。
+
+    Python の eval 関数を使用して、文字列として受け取った数式を直接評価（計算）します。
+    デモ目的のため、__builtins__ を制限して実行されます。
+
+    Args:
+        expression (str): 計算する数式 (例: "3 + 5")
+
+    Returns:
+        str: 計算結果の文字列、またはエラーメッセージ
+    """
     print(f"[Tool] Calculating: {expression}")
     try:
         # evalは安全ではないが、Hello Worldレベルの制御された環境でのデモとして使用
-        if expression.replace(" ", "") == "3+5":
-            return "8"
         result = eval(expression, {"__builtins__": None}, {})
-        return str(result)
+        return f"{result} 🚀"
     except Exception as e:
         return f"Error: {str(e)}"
 
 
 def run_agent(user_input: str):
+    """OpenAI Agents SDK を使用して、ユーザー入力に基づいたタスクを実行する。
+
+    Planner (LLM) がツールが必要かどうかを判断し、必要であれば Executor (この関数) が
+    ツールを実行して結果を LLM に戻し、最終的な回答を得る 1 ループの構成。
+
+    Args:
+        user_input (str): ユーザーからの入力テキスト
+    """
     print(f"User: {user_input}")
 
     api_key = os.getenv("OPENAI_API_KEY")
@@ -62,7 +78,7 @@ def run_agent(user_input: str):
                 object,
                 {
                     "role": "system",
-                    "content": "あなたは計算を助けるエージェントです。必要に応じて計算ツールを使用してください。",
+                    "content": "あなたは計算を助けるエージェントです。必要に応じて計算ツールを使用してください。ツールから返された結果に含まれる絵文字などは、そのまま最終的な回答に含めてください。",
                 },
             ),
         ),
