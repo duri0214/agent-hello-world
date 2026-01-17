@@ -1,6 +1,6 @@
 import os
 import json
-from typing import List, cast
+from typing import cast
 from openai import OpenAI
 from openai.types.chat import ChatCompletionMessageParam, ChatCompletionToolParam
 from dotenv import load_dotenv
@@ -35,7 +35,7 @@ def run_agent(user_input: str):
     client = OpenAI(api_key=api_key)
 
     # ツールの定義
-    tools: List[ChatCompletionToolParam] = [
+    tools: list[ChatCompletionToolParam] = [
         {
             "type": "function",
             "function": {
@@ -55,7 +55,7 @@ def run_agent(user_input: str):
         }
     ]
 
-    messages: List[ChatCompletionMessageParam] = [
+    messages: list[ChatCompletionMessageParam] = [
         cast(
             ChatCompletionMessageParam,
             cast(
