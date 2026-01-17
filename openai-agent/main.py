@@ -34,8 +34,19 @@ def calculate(expression: str) -> str:
 def run_agent(user_input: str):
     """OpenAI Agents SDK を使用して、ユーザー入力に基づいたタスクを実行する。
 
-    Planner (LLM) がツールが必要かどうかを判断し、必要であれば Executor (この関数) が
-    ツールを実行して結果を LLM に戻し、最終的な回答を得る 1 ループの構成。
+    以下の Planner-Executor ループ（1ループ構成）で処理が行われます。
+
+    1. [Step 1] Planning (タスクの解釈とツール選択):
+       `client.chat.completions.create` に `messages` と `tools`（計算機など）を一緒に渡します。
+       LLM は入力を解析し、最適なツールと引数を決定します。
+       この結果は `response.choices[0].message.tool_calls` に格納されます。
+    2. [Step 2] Executing (ツールの実行):
+       LLM から返された `tool_calls` は「実行すべきツールのリスト」です。
+       例えば、10個のツールが定義されていても、LLM はその中から必要な数（例: 2個）だけを選択して返します。
+       Executor（この関数）は、要求されたすべてのツールをループで回して順次実行し、
+       その結果（`role: "tool"`）をメッセージ履歴に追加します。
+    3. [Step 3] Finalizing (結果の集計と回答生成):
+       実行結果を含む履歴を再度 LLM に投げ、最終的な回答（例: "8 🚀" を含む回答）を得ます。
 
     Args:
         user_input (str): ユーザーからの入力テキスト
@@ -96,10 +107,11 @@ def run_agent(user_input: str):
     )
 
     response_message = response.choices[0].message
+    # LLMが「ツールを使う」と判断した場合、ここに使用すべきツールのリストが入る
     tool_calls = response_message.tool_calls
 
     if tool_calls:
-        # response_message (ChatCompletionMessage) を messages に追加
+        # 1. LLMの返答（ツール呼び出し要求）を履歴に追加
         # ChatCompletionMessage を直接 append すると型エラーになる場合があるため、
         # model_dump() で辞書形式にし、object を経由してキャストする
         messages.append(
@@ -108,6 +120,10 @@ def run_agent(user_input: str):
             )
         )
 
+        # 2. 要求されたツールをすべて実行する
+        # LLMは、定義されたツール群の中から必要なものを複数（あるいは1つ）選択して
+        # 同時に使うよう指示することがあるため、ループで処理する。
+        # 例えば、10個のツールがあっても、今の文脈に合う2個だけが返ってくる、といったイメージ。
         for tool_call in tool_calls:
             function_name = tool_call.function.name
             function_args = json.loads(tool_call.function.arguments)
@@ -119,6 +135,7 @@ def run_agent(user_input: str):
             if function_name == "calculate":
                 function_response = calculate(function_args.get("expression"))
 
+                # 3. 実行結果を履歴に追加（どのツール呼び出しに対する結果かを tool_call_id で紐付け）
                 messages.append(
                     cast(
                         ChatCompletionMessageParam,
