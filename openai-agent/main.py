@@ -5,6 +5,7 @@ from openai import OpenAI
 from openai.types.chat import ChatCompletionMessageParam, ChatCompletionToolParam
 from dotenv import load_dotenv
 from core.agent import BaseAgent
+from core.utils import validate_openai_api_key
 
 
 # .env ファイルから環境変数を読み込む（OPENAI_API_KEY など）
@@ -148,17 +149,9 @@ class Agent(BaseAgent):
             print(f"Agent: {response_message.content}")
 
 
-def run_agent(user_input: str):
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key or api_key == "your_api_key_here":
-        raise ValueError(
-            "OPENAI_API_KEY is not set or invalid. Please set a valid API key in the .env file."
-        )
-
-    client = OpenAI(api_key=api_key)
-    agent = Agent(client)
-    agent.run(user_input)
-
-
 if __name__ == "__main__":
-    run_agent("3 + 5 を計算して")
+    if validate_openai_api_key():
+        api_key = os.getenv("OPENAI_API_KEY")
+        openai_client = OpenAI(api_key=api_key)
+        agent = Agent(openai_client)
+        agent.run("3 + 5 を計算して")
