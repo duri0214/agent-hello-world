@@ -9,10 +9,10 @@ AIエージェント基盤のレイヤー構造を理解するための比較リ
 
 | 方式            | フォルダ             | 特徴・設計思想                          | 実行コマンド                         |
 |---------------|------------------|----------------------------------|--------------------------------|
-| OpenAI Agents | openai-agent/    | LLM標準のTool Callingを用いたシンプル構成     | python openai-agent/main.py    |
-| ADK           | adk-agent/       | Planner/Executor/Memoryに責務分離した構造 | python adk-agent/main.py       |
-| LangGraph     | langgraph-agent/ | グラフ表現によるステートフル制御                 | python langgraph-agent/main.py |
-| MCP           | mcp-tool/        | Model Context Protocolによるツール標準化  | python mcp-tool/client.py      |
+| OpenAI Agents | openai-agent/    | LLM標準のTool Callingを用いたシンプル構成     | python -m openai-agent.main    |
+| ADK           | adk-agent/       | Planner/Executor/Memoryに責務分離した構造 | python -m adk-agent.main       |
+| LangGraph     | langgraph-agent/ | グラフ表現によるステートフル制御                 | python -m langgraph-agent.main |
+| MCP           | mcp-agent/       | Model Context Protocolによるツール標準化  | python -m mcp-agent.main       |
 
 ## 共通テーマ
 - **ユーザー入力**: 「3 + 5 を計算して」
