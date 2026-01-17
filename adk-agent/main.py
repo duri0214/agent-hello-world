@@ -3,6 +3,7 @@ import json
 from openai import OpenAI
 from openai.types.chat import ChatCompletionMessageParam, ChatCompletionToolParam
 from dotenv import load_dotenv
+from core.agent import BaseAgent
 
 # .env ファイルから環境変数を読み込む
 load_dotenv()
@@ -117,7 +118,7 @@ class Executor:
             return f"Error: Unknown tool {function_name}"
 
 
-class Agent:
+class Agent(BaseAgent):
     """Planner, Executor, Memory を統括し、エージェントループを制御するクラス。"""
 
     def __init__(self, client: OpenAI):
