@@ -1,5 +1,6 @@
 import os
 import json
+
 from openai import OpenAI
 from openai.types.chat import ChatCompletionMessageParam, ChatCompletionToolParam
 from dotenv import load_dotenv

@@ -21,7 +21,7 @@ pip install -r requirements.txt
 
 ### 3. エージェントの実行
 ```bash
-python adk-agent/main.py
+python -m adk-agent.main
 ```
 
 ## 期待される出力

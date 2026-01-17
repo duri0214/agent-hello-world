@@ -1,5 +1,6 @@
 import os
 import json
+
 from typing import cast
 from openai import OpenAI
 from openai.types.chat import ChatCompletionMessageParam, ChatCompletionToolParam

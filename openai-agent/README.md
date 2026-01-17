@@ -26,7 +26,7 @@ pip install -r requirements.txt
 
 ### 3. エージェントの実行
 ```bash
-python openai-agent/main.py
+python -m openai-agent.main
 ```
 
 ## 期待される出力
